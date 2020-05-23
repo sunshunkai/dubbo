@@ -32,11 +32,14 @@ public class ClassLoaderFilter implements Filter {
 
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
+        // 当前线程类加载器
         ClassLoader ocl = Thread.currentThread().getContextClassLoader();
+        // 当前线程的上下文加载器设置为接口的类加载器
         Thread.currentThread().setContextClassLoader(invoker.getInterface().getClassLoader());
         try {
             return invoker.invoke(invocation);
         } finally {
+            // 当前线程的上下文加载器还原
             Thread.currentThread().setContextClassLoader(ocl);
         }
     }
