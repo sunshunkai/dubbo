@@ -19,6 +19,7 @@ package org.apache.dubbo.config.annotation;
 import org.apache.dubbo.rpc.ExporterListener;
 import org.apache.dubbo.rpc.Filter;
 import org.apache.dubbo.rpc.cluster.Constants;
+import org.apache.dubbo.rpc.filter.TimeoutFilter;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -201,6 +202,7 @@ public @interface Reference {
 
     /**
      * Timeout value for service invocation, default value is 0
+     * @see TimeoutFilter
      */
     int timeout() default 0;
 

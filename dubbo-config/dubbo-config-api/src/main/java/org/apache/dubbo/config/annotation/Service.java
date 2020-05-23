@@ -21,6 +21,8 @@ import org.apache.dubbo.rpc.Filter;
 import org.apache.dubbo.rpc.cluster.Constants;
 import org.apache.dubbo.rpc.filter.AccessLogFilter;
 import org.apache.dubbo.rpc.filter.ExecuteLimitFilter;
+import org.apache.dubbo.rpc.filter.TimeoutFilter;
+import org.apache.dubbo.rpc.filter.TokenFilter;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -75,6 +77,7 @@ public @interface Service {
 
     /**
      * Service token, default value is false
+     * @see TokenFilter
      */
     String token() default "";
 
@@ -214,6 +217,7 @@ public @interface Service {
 
     /**
      * Timeout value for service invocation, default value is 0
+     * @see TimeoutFilter
      */
     int timeout() default 0;
 
