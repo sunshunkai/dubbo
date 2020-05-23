@@ -66,6 +66,7 @@ public class ExceptionFilter extends ListenableFilter {
                     Throwable exception = appResponse.getException();
 
                     // directly throw if it's checked exception
+                    // checked exception 直接抛出
                     if (!(exception instanceof RuntimeException) && (exception instanceof Exception)) {
                         return;
                     }
@@ -102,6 +103,7 @@ public class ExceptionFilter extends ListenableFilter {
                     }
 
                     // otherwise, wrap with RuntimeException and throw back to the client
+                    // 包装成 RuntimeException 异常
                     appResponse.setException(new RuntimeException(StringUtils.toString(exception)));
                     return;
                 } catch (Throwable e) {
