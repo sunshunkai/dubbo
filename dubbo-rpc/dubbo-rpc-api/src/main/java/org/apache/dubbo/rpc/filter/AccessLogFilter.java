@@ -78,6 +78,7 @@ public class AccessLogFilter implements Filter {
     // It's safe to declare it as singleton since it runs on single thread only
     private static final DateFormat FILE_NAME_FORMATTER = new SimpleDateFormat(FILE_DATE_FORMAT);
 
+    // key 是 accesslog的值，value是对应的日志集合
     private static final Map<String, Set<AccessLogData>> LOG_ENTRIES = new ConcurrentHashMap<String, Set<AccessLogData>>();
 
     private static final ScheduledExecutorService LOG_SCHEDULED = Executors.newSingleThreadScheduledExecutor(new NamedThreadFactory("Dubbo-Access-Log", true));
@@ -125,13 +126,16 @@ public class AccessLogFilter implements Filter {
 
     private void writeLogToFile() {
         if (!LOG_ENTRIES.isEmpty()) {
+            // 遍历Map，把日志写入到对应的文件
             for (Map.Entry<String, Set<AccessLogData>> entry : LOG_ENTRIES.entrySet()) {
                 try {
                     String accessLog = entry.getKey();
                     Set<AccessLogData> logSet = entry.getValue();
                     if (ConfigUtils.isDefault(accessLog)) {
+                        // 默认日志
                         processWithServiceLogger(logSet);
                     } else {
+                        // 日志写到文件中
                         File file = new File(accessLog);
                         createIfLogDirAbsent(file);
                         if (logger.isDebugEnabled()) {
@@ -188,6 +192,9 @@ public class AccessLogFilter implements Filter {
         }
     }
 
+    /**
+     * 日志名按照时间命名
+     */
     private void renameFile(File file) {
         if (file.exists()) {
             String now = FILE_NAME_FORMATTER.format(new Date());
