@@ -19,6 +19,8 @@ package org.apache.dubbo.config.annotation;
 import org.apache.dubbo.rpc.ExporterListener;
 import org.apache.dubbo.rpc.Filter;
 import org.apache.dubbo.rpc.cluster.Constants;
+import org.apache.dubbo.rpc.filter.AccessLogFilter;
+import org.apache.dubbo.rpc.filter.ExecuteLimitFilter;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -88,11 +90,13 @@ public @interface Service {
 
     /**
      * Access log for the service, default value is ""
+     * @see AccessLogFilter
      */
     String accesslog() default "";
 
     /**
      * Maximum concurrent executes for the service, default value is 0 - no limits
+     * @see ExecuteLimitFilter
      */
     int executes() default 0;
 

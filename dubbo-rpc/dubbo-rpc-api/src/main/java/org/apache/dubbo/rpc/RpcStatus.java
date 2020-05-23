@@ -32,8 +32,9 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class RpcStatus {
 
+    // 服务统计 key:url,value:服务监控
     private static final ConcurrentMap<String, RpcStatus> SERVICE_STATISTICS = new ConcurrentHashMap<String, RpcStatus>();
-
+    // 方法调用统计
     private static final ConcurrentMap<String, ConcurrentMap<String, RpcStatus>> METHOD_STATISTICS = new ConcurrentHashMap<String, ConcurrentMap<String, RpcStatus>>();
     private final ConcurrentMap<String, Object> values = new ConcurrentHashMap<String, Object>();
     private final AtomicInteger active = new AtomicInteger();
@@ -109,6 +110,7 @@ public class RpcStatus {
      * @param url
      */
     public static boolean beginCount(URL url, String methodName, int max) {
+        // 设置的值小于等于0,默认不生效
         max = (max <= 0) ? Integer.MAX_VALUE : max;
         RpcStatus appStatus = getStatus(url);
         RpcStatus methodStatus = getStatus(url, methodName);
