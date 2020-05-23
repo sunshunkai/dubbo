@@ -59,6 +59,7 @@ public class ContextFilter extends ListenableFilter {
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
         Map<String, String> attachments = invocation.getAttachments();
         if (attachments != null) {
+            // 清除异步属性
             attachments = new HashMap<>(attachments);
             attachments.remove(PATH_KEY);
             attachments.remove(INTERFACE_KEY);
@@ -72,6 +73,7 @@ public class ContextFilter extends ListenableFilter {
             attachments.remove(TAG_KEY);
             attachments.remove(FORCE_USE_TAG);
         }
+        // 设置当前请求上下文信息
         RpcContext.getContext()
                 .setInvoker(invoker)
                 .setInvocation(invocation)
@@ -96,6 +98,7 @@ public class ContextFilter extends ListenableFilter {
             return invoker.invoke(invocation);
         } finally {
             // IMPORTANT! For async scenario, we must remove context from current thread, so we always create a new RpcContext for the next invoke for the same thread.
+            // 清除上下文信息
             RpcContext.removeContext();
             RpcContext.removeServerContext();
         }
