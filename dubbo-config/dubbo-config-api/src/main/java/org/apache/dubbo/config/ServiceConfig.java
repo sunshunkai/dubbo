@@ -412,6 +412,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
         if (StringUtils.isEmpty(path)) {
             path = interfaceName;
         }
+        //暴露url操作
         doExportUrls();
     }
 
@@ -454,6 +455,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
             String pathKey = URL.buildKey(getContextPath(protocolConfig).map(p -> p + "/" + path).orElse(path), group, version);
             ProviderModel providerModel = new ProviderModel(pathKey, ref, interfaceClass);
             ApplicationModel.initProviderModel(pathKey, providerModel);
+            //获取注册中心的信息，根据协议暴露对应的url
             doExportUrlsFor1Protocol(protocolConfig, registryURLs);
         }
     }

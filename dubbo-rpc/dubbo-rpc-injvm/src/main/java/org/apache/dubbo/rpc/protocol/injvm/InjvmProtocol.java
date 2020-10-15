@@ -40,9 +40,11 @@ import static org.apache.dubbo.rpc.Constants.LOCAL_PROTOCOL;
  */
 public class InjvmProtocol extends AbstractProtocol implements Protocol {
 
+    // 本地调用 Protocol 的实现类key
     public static final String NAME = LOCAL_PROTOCOL;
-
+    // 默认端口
     public static final int DEFAULT_PORT = 0;
+    // 单例
     private static InjvmProtocol INSTANCE;
 
     public InjvmProtocol() {
@@ -58,24 +60,29 @@ public class InjvmProtocol extends AbstractProtocol implements Protocol {
 
     static Exporter<?> getExporter(Map<String, Exporter<?>> map, URL key) {
         Exporter<?> result = null;
-
+        // 如果服务key不是*
         if (!key.getServiceKey().contains("*")) {
+            // 从集合中获取
             result = map.get(key.getServiceKey());
         } else {
+            // 如果map不为空，则遍历暴露者，来找到对应的 exporter
             if (CollectionUtils.isNotEmptyMap(map)) {
+                // 如果是服务key
                 for (Exporter<?> exporter : map.values()) {
                     if (UrlUtils.isServiceKeyMatch(key, exporter.getInvoker().getUrl())) {
+                        // 赋值
                         result = exporter;
                         break;
                     }
                 }
             }
         }
-
+        // 如果没有找到exporter
         if (result == null) {
             return null;
         } else if (ProtocolUtils.isGeneric(
                 result.getInvoker().getUrl().getParameter(GENERIC_KEY))) {
+            // 泛化调用
             return null;
         } else {
             return result;
@@ -89,15 +96,18 @@ public class InjvmProtocol extends AbstractProtocol implements Protocol {
 
     @Override
     public <T> Exporter<T> export(Invoker<T> invoker) throws RpcException {
+        // 创建 InjvmExporter
         return new InjvmExporter<T>(invoker, invoker.getUrl().getServiceKey(), exporterMap);
     }
 
     @Override
     public <T> Invoker<T> protocolBindingRefer(Class<T> serviceType, URL url) throws RpcException {
+        // 创建 InjvmInvoker
         return new InjvmInvoker<T>(serviceType, url, url.getServiceKey(), exporterMap);
     }
 
     public boolean isInjvmRefer(URL url) {
+        // 获得scope配置
         String scope = url.getParameter(SCOPE_KEY);
         // Since injvm protocol is configured explicitly, we don't need to set any extra flag, use normal refer process.
         if (SCOPE_LOCAL.equals(scope) || (url.getParameter(LOCAL_PROTOCOL, false))) {

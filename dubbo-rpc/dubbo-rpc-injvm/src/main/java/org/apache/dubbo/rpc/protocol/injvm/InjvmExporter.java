@@ -24,11 +24,14 @@ import java.util.Map;
 
 /**
  * InjvmExporter
+ * 暴露本地服务
  */
 class InjvmExporter<T> extends AbstractExporter<T> {
 
+    // 服务key
     private final String key;
 
+    // 保留者集合
     private final Map<String, Exporter<?>> exporterMap;
 
     InjvmExporter(Invoker<T> invoker, String key, Map<String, Exporter<?>> exporterMap) {
@@ -38,6 +41,9 @@ class InjvmExporter<T> extends AbstractExporter<T> {
         exporterMap.put(key, this);
     }
 
+    /**
+     * 取消暴露
+     */
     @Override
     public void unexport() {
         super.unexport();
