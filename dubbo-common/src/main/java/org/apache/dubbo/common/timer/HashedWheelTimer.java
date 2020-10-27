@@ -95,6 +95,7 @@ public class HashedWheelTimer implements Timer {
     private final Worker worker = new Worker();
     private final Thread workerThread;
 
+    // 时间轮状态
     private static final int WORKER_STATE_INIT = 0;
     private static final int WORKER_STATE_STARTED = 1;
     private static final int WORKER_STATE_SHUTDOWN = 2;
@@ -109,7 +110,9 @@ public class HashedWheelTimer implements Timer {
     private final HashedWheelBucket[] wheel;
     private final int mask;
     private final CountDownLatch startTimeInitialized = new CountDownLatch(1);
+    // 需要执行的任务
     private final Queue<HashedWheelTimeout> timeouts = new LinkedBlockingQueue<>();
+    // 取消的任务
     private final Queue<HashedWheelTimeout> cancelledTimeouts = new LinkedBlockingQueue<>();
     private final AtomicLong pendingTimeouts = new AtomicLong(0);
     private final long maxPendingTimeouts;
@@ -204,16 +207,21 @@ public class HashedWheelTimer implements Timer {
      * Creates a new timer.
      *
      * @param threadFactory      a {@link ThreadFactory} that creates a
-     *                           background {@link Thread} which is dedicated to
+     *                           background {@link Thread} which is dedicated to。
+     *                           创建线程的线程工厂对象，每个时间轮对象持有一个线✖️
      *                           {@link TimerTask} execution.
      * @param tickDuration       the duration between tick
+     *                          扇形块的时间间隔
      * @param unit               the time unit of the {@code tickDuration}
+     *                         tickDuration 的单位
      * @param ticksPerWheel      the size of the wheel
+     *                           圆环上一共有多少个时间间隔，HashedWheelTimer对其正则化，将其换算为大于等于该值的2^n
      * @param maxPendingTimeouts The maximum number of pending timeouts after which call to
      *                           {@code newTimeout} will result in
      *                           {@link java.util.concurrent.RejectedExecutionException}
      *                           being thrown. No maximum pending timeouts limit is assumed if
      *                           this value is 0 or negative.
+     *                           最多允许多少个任务等待执行
      * @throws NullPointerException     if either of {@code threadFactory} and {@code unit} is {@code null}
      * @throws IllegalArgumentException if either of {@code tickDuration} and {@code ticksPerWheel} is &lt;= 0
      */
@@ -289,6 +297,12 @@ public class HashedWheelTimer implements Timer {
         return wheel;
     }
 
+    /**
+     * 将 ticksPerWheel 向上变成最近的 2的次方
+     * 如：511 -> 512, 513 -> 1024
+     * @param ticksPerWheel
+     * @return
+     */
     private static int normalizeTicksPerWheel(int ticksPerWheel) {
         int normalizedTicksPerWheel = ticksPerWheel - 1;
         normalizedTicksPerWheel |= normalizedTicksPerWheel >>> 1;
@@ -421,6 +435,7 @@ public class HashedWheelTimer implements Timer {
                 "so that only a few instances are created.");
     }
 
+    // 调度时间轮线程
     private final class Worker implements Runnable {
         private final Set<Timeout> unprocessedTimeouts = new HashSet<Timeout>();
 
