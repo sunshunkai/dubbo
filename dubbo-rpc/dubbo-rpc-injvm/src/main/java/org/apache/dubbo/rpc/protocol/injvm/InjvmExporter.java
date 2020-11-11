@@ -32,6 +32,7 @@ class InjvmExporter<T> extends AbstractExporter<T> {
     private final String key;
 
     // 保留者集合
+    // org.apache.dubbo.rpc.protocol.AbstractProtocol.exporterMap
     private final Map<String, Exporter<?>> exporterMap;
 
     InjvmExporter(Invoker<T> invoker, String key, Map<String, Exporter<?>> exporterMap) {

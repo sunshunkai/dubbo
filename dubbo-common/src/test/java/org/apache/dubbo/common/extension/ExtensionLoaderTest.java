@@ -105,6 +105,7 @@ public class ExtensionLoaderTest {
         }
     }
 
+    // 从 @SPI 的 value 中获得 Extension
     @Test
     public void test_getDefaultExtension() throws Exception {
         SimpleExt ext = ExtensionLoader.getExtensionLoader(SimpleExt.class).getDefaultExtension();
@@ -123,12 +124,14 @@ public class ExtensionLoaderTest {
         assertNull(name);
     }
 
+    //  根据 getExtension 方法名获取
     @Test
     public void test_getExtension() throws Exception {
         assertTrue(ExtensionLoader.getExtensionLoader(SimpleExt.class).getExtension("impl1") instanceof SimpleExtImpl1);
         assertTrue(ExtensionLoader.getExtensionLoader(SimpleExt.class).getExtension("impl2") instanceof SimpleExtImpl2);
     }
 
+    // wrapper 包装
     @Test
     public void test_getExtension_WithWrapper() throws Exception {
         WrappedExt impl1 = ExtensionLoader.getExtensionLoader(WrappedExt.class).getExtension("impl1");

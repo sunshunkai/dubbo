@@ -639,6 +639,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                 .setHost(LOCALHOST_VALUE)
                 .setPort(0)
                 .build();
+        // 先封装成 Invoke 再导出
         Exporter<?> exporter = protocol.export(
                 PROXY_FACTORY.getInvoker(ref, (Class) interfaceClass, local));
         exporters.add(exporter);
