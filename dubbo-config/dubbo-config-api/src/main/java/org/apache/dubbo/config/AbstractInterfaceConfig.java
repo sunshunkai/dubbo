@@ -349,6 +349,7 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
                                 .addParameter(REGISTRY_KEY, url.getProtocol())
                                 .setProtocol(REGISTRY_PROTOCOL)
                                 .build();
+                        // 提供者并且register=false    消费者subscribe=false 不从该注册中心订阅服务
                         if ((provider && url.getParameter(REGISTER_KEY, true))
                                 || (!provider && url.getParameter(SUBSCRIBE_KEY, true))) {
                             registryList.add(url);

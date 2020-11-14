@@ -296,7 +296,7 @@ public abstract class FailbackRegistry extends AbstractRegistry {
             doSubscribe(url, listener);
         } catch (Exception e) {
             Throwable t = e;
-
+            // 注册中心订阅失败后读取本地缓存文件获取服务
             List<URL> urls = getCacheUrls(url);
             if (CollectionUtils.isNotEmpty(urls)) {
                 notify(url, listener, urls);

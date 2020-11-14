@@ -92,6 +92,7 @@ public abstract class AbstractRegistry implements Registry {
         setUrl(url);
         // Start file save timer
         syncSaveFile = url.getParameter(REGISTRY_FILESAVE_SYNC_KEY, false);
+        // 本地缓存文件名
         String filename = url.getParameter(FILE_KEY, System.getProperty("user.home") + "/.dubbo/dubbo-registry-" + url.getParameter(APPLICATION_KEY) + "-" + url.getAddress() + ".cache");
         File file = null;
         if (ConfigUtils.isNotEmpty(filename)) {
@@ -378,7 +379,7 @@ public abstract class AbstractRegistry implements Registry {
 
     /**
      * Notify changes from the Provider side.
-     *
+     * 回调通知处理函数
      * @param url      consumer side url
      * @param listener listener
      * @param urls     provider latest urls
@@ -418,6 +419,7 @@ public abstract class AbstractRegistry implements Registry {
             listener.notify(categoryList);
             // We will update our cache file after each notification.
             // When our Registry has a subscribe failure due to network jitter, we can return at least the existing cache URL.
+            // 保存配置信息到本地文件
             saveProperties(url);
         }
     }
@@ -428,6 +430,7 @@ public abstract class AbstractRegistry implements Registry {
         }
 
         try {
+            // URL信息拼接
             StringBuilder buf = new StringBuilder();
             Map<String, List<URL>> categoryNotified = notified.get(url);
             if (categoryNotified != null) {
@@ -440,6 +443,7 @@ public abstract class AbstractRegistry implements Registry {
                     }
                 }
             }
+            // 缓存的文件暂时放在 properties
             properties.setProperty(url.getServiceKey(), buf.toString());
             long version = lastCacheChanged.incrementAndGet();
             if (syncSaveFile) {
