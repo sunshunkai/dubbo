@@ -125,6 +125,7 @@ public abstract class AbstractRetryTask implements TimerTask {
         } catch (Throwable t) { // Ignore all the exceptions and wait for the next retry
             logger.warn("Failed to execute task " + taskName + ", url: " + url + ", waiting for again, cause:" + t.getMessage(), t);
             // reput this task when catch exception.
+            // 等待重试
             reput(timeout, retryPeriod);
         }
     }

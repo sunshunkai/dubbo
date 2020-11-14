@@ -48,23 +48,25 @@ import static org.apache.dubbo.registry.Constants.REGISTRY_RETRY_PERIOD_KEY;
 public abstract class FailbackRegistry extends AbstractRegistry {
 
     /*  retry task map */
-
+    // 注册失败的URL集合，key：注册失败的URL，value：对应的重试任务
     private final ConcurrentMap<URL, FailedRegisteredTask> failedRegistered = new ConcurrentHashMap<URL, FailedRegisteredTask>();
-
+    // 取消注册失败的URL集合
     private final ConcurrentMap<URL, FailedUnregisteredTask> failedUnregistered = new ConcurrentHashMap<URL, FailedUnregisteredTask>();
-
+    // 订阅失败的URL集合
     private final ConcurrentMap<Holder, FailedSubscribedTask> failedSubscribed = new ConcurrentHashMap<Holder, FailedSubscribedTask>();
-
+    // 取消订阅失败的URL集合
     private final ConcurrentMap<Holder, FailedUnsubscribedTask> failedUnsubscribed = new ConcurrentHashMap<Holder, FailedUnsubscribedTask>();
-
+    // 通知失败的URL集合，key：通知失败的URL+Listener集合，value：相应的重试任务
     private final ConcurrentMap<Holder, FailedNotifiedTask> failedNotified = new ConcurrentHashMap<Holder, FailedNotifiedTask>();
 
     /**
      * The time in milliseconds the retryExecutor will wait
+     * 重试操作的时间间隔
      */
     private final int retryPeriod;
 
     // Timer for failure retry, regular check if there is a request for failure, and if there is, an unlimited retry
+    // 定时任务执行失败重试执行的时间轮
     private final HashedWheelTimer retryTimer;
 
     public FailbackRegistry(URL url) {
@@ -400,6 +402,7 @@ public abstract class FailbackRegistry extends AbstractRegistry {
     @Override
     public void destroy() {
         super.destroy();
+        // 停止时间轮
         retryTimer.stop();
     }
 
