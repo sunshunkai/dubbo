@@ -72,6 +72,7 @@ public class CuratorZookeeperClient extends AbstractZookeeperClient<CuratorZooke
                 builder = builder.authorization("digest", authority.getBytes());
             }
             client = builder.build();
+            // 添加连接状态的监听
             client.getConnectionStateListenable().addListener(new ConnectionStateListener() {
                 @Override
                 public void stateChanged(CuratorFramework client, ConnectionState state) {
@@ -85,6 +86,7 @@ public class CuratorZookeeperClient extends AbstractZookeeperClient<CuratorZooke
                 }
             });
             client.start();
+            // 阻塞等待连接ZK集群成功
             boolean connected = client.blockUntilConnected(timeout, TimeUnit.MILLISECONDS);
             if (!connected) {
                 throw new IllegalStateException("zookeeper not connected");
