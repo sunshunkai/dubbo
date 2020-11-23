@@ -192,7 +192,7 @@ public class ExtensionLoader<T> {
      * @see #getActivateExtension(org.apache.dubbo.common.URL, String[], String)
      */
     public List<T> getActivateExtension(URL url, String key, String group) {
-        String value = url.getParameter(key);
+        String value = url.getParameter(key);//test://localhost/test?ext=order1,default    value = order1,default
         return getActivateExtension(url, StringUtils.isEmpty(value) ? null : COMMA_SPLIT_PATTERN.split(value), group);
     }
 
