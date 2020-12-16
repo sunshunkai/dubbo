@@ -198,16 +198,19 @@ public class RegistryProtocol implements Protocol {
         // 获取注册中心的URL，比如zookeeper://127.0.0.1：2181
         URL providerUrl = getProviderUrl(originInvoker);
 
-        // Subscribe the override data
-        // FIXME When the provider subscribes, it will affect the scene : a certain JVM exposes the service and call
-        //  the same service. Because the subscribed is cached key with the name of the service, it causes the
-        //  subscription information to cover.
-        final URL overrideSubscribeUrl = getSubscribedOverrideUrl(providerUrl);
+    // Subscribe the override data
+    // FIXME When the provider subscribes, it will affect the scene : a certain JVM exposes the
+    // service and call
+    //  the same service. Because the subscribed is cached key with the name of the service, it
+    // causes the
+    //  subscription information to cover.
+    // 提供者订阅时，会影响同一JVM即暴露服务，又引用同一服务的的场景，因为subscribed以服务名为缓存的key，导致订阅信息覆盖。
+    final URL overrideSubscribeUrl = getSubscribedOverrideUrl(providerUrl);
         final OverrideListener overrideSubscribeListener = new OverrideListener(overrideSubscribeUrl, originInvoker);
         overrideListeners.put(overrideSubscribeUrl, overrideSubscribeListener);
 
         providerUrl = overrideUrlWithConfig(providerUrl, overrideSubscribeListener);
-        //export invoker 这里就是前面说的dubbo:// 的暴露，并且还会打开端口等操作
+        //export invoker 这里就是前面说的dubbo:// 的暴露，并且还会打开端口等操作  DubboProtocol
         final ExporterChangeableWrapper<T> exporter = doLocalExport(originInvoker, providerUrl);
 
         // url to registry 根据URL加载Registry的实现类，比如我们这里用的即使ZookeeperRegistry
@@ -244,7 +247,7 @@ public class RegistryProtocol implements Protocol {
     @SuppressWarnings("unchecked")
     private <T> ExporterChangeableWrapper<T> doLocalExport(final Invoker<T> originInvoker, URL providerUrl) {
         String key = getCacheKey(originInvoker);
-
+        // DubboProtocol
         return (ExporterChangeableWrapper<T>) bounds.computeIfAbsent(key, s -> {
             Invoker<?> invokerDelegate = new InvokerDelegate<>(originInvoker, providerUrl);
             return new ExporterChangeableWrapper<>((Exporter<T>) protocol.export(invokerDelegate), originInvoker);

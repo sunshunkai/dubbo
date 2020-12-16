@@ -1,0 +1,3 @@
+org.apache.dubbo.common.extension.ssk.jdk.impl.QiniuUploadServiceImpl
+org.apache.dubbo.common.extension.ssk.jdk.impl.AliyunUploadServiceImpl
+org.apache.dubbo.common.extension.ssk.jdk.impl.BaiduUploadServiceImpl

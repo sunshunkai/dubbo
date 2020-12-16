@@ -66,6 +66,8 @@ public class RandomLoadBalance extends AbstractLoadBalance {
                 sameWeight = false;
             }
         }
+
+        // 比如4个Invoker，权重为1+2+3+4=10，在1-10生成随机数，如5，依次递减5-1-2-3<0，则在第三个Invoker
         if (totalWeight > 0 && !sameWeight) {
             // If (not every invoker has the same weight & at least one invoker's weight>0), select randomly based on totalWeight.
             int offset = ThreadLocalRandom.current().nextInt(totalWeight);

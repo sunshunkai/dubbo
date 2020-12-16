@@ -62,16 +62,19 @@ public class InvokeTelnetHandler implements TelnetHandler {
         String service = (String) channel.getAttribute(ChangeTelnetHandler.SERVICE_KEY);
 
         int i = message.indexOf("(");
-
+        // 检验方法的括号是否正确
         if (i < 0 || !message.endsWith(")")) {
             return "Invalid parameters, format: service.method(args)";
         }
-
+        // 接口+方法
         String method = message.substring(0, i).trim();
+        // 参数字符串
         String args = message.substring(i + 1, message.length() - 1).trim();
         i = method.lastIndexOf(".");
         if (i >= 0) {
+            // 接口
             service = method.substring(0, i).trim();
+            // 方法
             method = method.substring(i + 1).trim();
         }
 
@@ -127,6 +130,7 @@ public class InvokeTelnetHandler implements TelnetHandler {
                     long start = System.currentTimeMillis();
                     AppResponse result = new AppResponse();
                     try {
+                        // 执行真的的方法
                         Object o = invokeMethod.invoke(selectedProvider.getServiceInstance(), array);
                         result.setValue(o);
                     } catch (Throwable t) {

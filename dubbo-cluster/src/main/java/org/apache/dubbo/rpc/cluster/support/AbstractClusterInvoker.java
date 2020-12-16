@@ -124,7 +124,7 @@ public abstract class AbstractClusterInvoker<T> implements Invoker<T> {
             return null;
         }
         String methodName = invocation == null ? StringUtils.EMPTY : invocation.getMethodName();
-
+        // 粘滞连接:尽量让客户端向同一提供者发起请求
         boolean sticky = invokers.get(0).getUrl()
                 .getMethodParameter(methodName, CLUSTER_STICKY_KEY, DEFAULT_CLUSTER_STICKY);
 
@@ -241,7 +241,7 @@ public abstract class AbstractClusterInvoker<T> implements Invoker<T> {
         if (contextAttachments != null && contextAttachments.size() != 0) {
             ((RpcInvocation) invocation).addAttachments(contextAttachments);
         }
-
+        // route
         List<Invoker<T>> invokers = list(invocation);
         LoadBalance loadbalance = initLoadBalance(invokers, invocation);
         RpcUtils.attachInvocationIdIfAsync(getUrl(), invocation);
