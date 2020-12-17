@@ -38,9 +38,9 @@ public abstract class AbstractLoadBalance implements LoadBalance {
      * Calculate the weight according to the uptime proportion of warmup time
      * the new weight will be within 1(inclusive) to weight(inclusive)
      *
-     * @param uptime the uptime in milliseconds
-     * @param warmup the warmup time in milliseconds
-     * @param weight the weight of an invoker
+     * @param uptime the uptime in milliseconds  已预热时间(启动时间)
+     * @param warmup the warmup time in milliseconds  预热时间
+     * @param weight the weight of an invoker  权重
      * @return weight which takes warmup into account
      */
     static int calculateWarmupWeight(int uptime, int warmup, int weight) {
@@ -65,7 +65,7 @@ public abstract class AbstractLoadBalance implements LoadBalance {
     /**
      * Get the weight of the invoker's invocation which takes warmup time into account
      * if the uptime is within the warmup time, the weight will be reduce proportionally
-     *
+     * 获得服务的权重,如果设置预热时间,在预热时间按照比例减少权重
      * @param invoker    the invoker
      * @param invocation the invocation of this invoker
      * @return weight

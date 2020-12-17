@@ -62,6 +62,7 @@ public class RandomLoadBalance extends AbstractLoadBalance {
             weights[i] = weight;
             // Sum
             totalWeight += weight;
+            // 计算所有权重是否都一样
             if (sameWeight && weight != firstWeight) {
                 sameWeight = false;
             }

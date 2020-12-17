@@ -53,10 +53,14 @@ public class ConsistentHashLoadBalance extends AbstractLoadBalance {
     @SuppressWarnings("unchecked")
     @Override
     protected <T> Invoker<T> doSelect(List<Invoker<T>> invokers, URL url, Invocation invocation) {
+        // 方法名
         String methodName = RpcUtils.getMethodName(invocation);
+        // 服务key:接口+方法名
         String key = invokers.get(0).getUrl().getServiceKey() + "." + methodName;
         int identityHashCode = System.identityHashCode(invokers);
+        // 以调用方法名为key,获取一致性hash选择器
         ConsistentHashSelector<T> selector = (ConsistentHashSelector<T>) selectors.get(key);
+        // 不存在hash选择器,则创建
         if (selector == null || selector.identityHashCode != identityHashCode) {
             selectors.put(key, new ConsistentHashSelector<T>(invokers, methodName, identityHashCode));
             selector = (ConsistentHashSelector<T>) selectors.get(key);
@@ -65,13 +69,13 @@ public class ConsistentHashLoadBalance extends AbstractLoadBalance {
     }
 
     private static final class ConsistentHashSelector<T> {
-
+        // 虚拟节点,Hash环
         private final TreeMap<Long, Invoker<T>> virtualInvokers;
-
+        // 副本数【每个Invoker】,hash节点数
         private final int replicaNumber;
-
+        // 服务对应的hashCode
         private final int identityHashCode;
-
+        // 参数(位置)索引数组
         private final int[] argumentIndex;
 
         ConsistentHashSelector(List<Invoker<T>> invokers, String methodName, int identityHashCode) {
@@ -81,15 +85,18 @@ public class ConsistentHashLoadBalance extends AbstractLoadBalance {
             this.replicaNumber = url.getMethodParameter(methodName, HASH_NODES, 160);
             String[] index = COMMA_SPLIT_PATTERN.split(url.getMethodParameter(methodName, HASH_ARGUMENTS, "0"));
             argumentIndex = new int[index.length];
+            // 记录参数的位置,计算hash
             for (int i = 0; i < index.length; i++) {
                 argumentIndex[i] = Integer.parseInt(index[i]);
             }
             for (Invoker<T> invoker : invokers) {
                 String address = invoker.getUrl().getAddress();
                 for (int i = 0; i < replicaNumber / 4; i++) {
+                    //
                     byte[] digest = md5(address + i);
                     for (int h = 0; h < 4; h++) {
                         long m = hash(digest, h);
+                        // 计算出来的hash与Invoker放入hash环中
                         virtualInvokers.put(m, invoker);
                     }
                 }
@@ -97,6 +104,7 @@ public class ConsistentHashLoadBalance extends AbstractLoadBalance {
         }
 
         public Invoker<T> select(Invocation invocation) {
+            // 记录设置参数索引中的key的值
             String key = toKey(invocation.getArguments());
             byte[] digest = md5(key);
             return selectForKey(hash(digest, 0));
@@ -113,8 +121,10 @@ public class ConsistentHashLoadBalance extends AbstractLoadBalance {
         }
 
         private Invoker<T> selectForKey(long hash) {
+            // 返回key大于hash的最小值
             Map.Entry<Long, Invoker<T>> entry = virtualInvokers.ceilingEntry(hash);
             if (entry == null) {
+                // 不存在返回第一个Invoker
                 entry = virtualInvokers.firstEntry();
             }
             return entry.getValue();
