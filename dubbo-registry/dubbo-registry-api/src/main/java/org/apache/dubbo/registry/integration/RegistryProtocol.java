@@ -269,7 +269,9 @@ public class RegistryProtocol implements Protocol {
          * Only if the new url going to Registry is different with the previous one should we do unregister and register.
          */
         if (providerInvokerWrapper.isReg() && !registeredProviderUrl.equals(providerInvokerWrapper.getProviderUrl())) {
+            // 取消旧的注册信息
             unregister(registryUrl, providerInvokerWrapper.getProviderUrl());
+            // 重新注册
             register(registryUrl, registeredProviderUrl);
             newProviderInvokerWrapper.setReg(true);
         }
@@ -521,13 +523,15 @@ public class RegistryProtocol implements Protocol {
      * 1.Ensure that the exporter returned by registryprotocol can be normal destroyed
      * 2.No need to re-register to the registry after notify
      * 3.The invoker passed by the export method , would better to be the invoker of exporter
+     *
+     * 服务提供者收到ZK回调
      */
     private class OverrideListener implements NotifyListener {
-        private final URL subscribeUrl;
-        private final Invoker originInvoker;
+        private final URL subscribeUrl;  // 订阅的时候记录一下订阅URL
+        private final Invoker originInvoker;  // 订阅时的Invoker
 
 
-        private List<Configurator> configurators;
+        private List<Configurator> configurators; // ZK推送最新的配置
 
         public OverrideListener(URL subscribeUrl, Invoker originalInvoker) {
             this.subscribeUrl = subscribeUrl;
