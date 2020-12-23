@@ -57,6 +57,7 @@ public class ContextFilter extends ListenableFilter {
 
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
+        // 隐式获得参数
         Map<String, String> attachments = invocation.getAttachments();
         if (attachments != null) {
             // 清除异步属性
