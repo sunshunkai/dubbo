@@ -195,7 +195,8 @@ public class RegistryProtocol implements Protocol {
     public <T> Exporter<T> export(final Invoker<T> originInvoker) throws RpcException {
         URL registryUrl = getRegistryUrl(originInvoker);
         // url to export locally
-        // 获取注册中心的URL，比如zookeeper://127.0.0.1：2181
+        // 服务提供者信息
+        //dubbo://192.168.0.106:20880/org.apache.dubbo.demo.DemoService?anyhost=true&application=dubbo-demo-annotation-provider&bean.name=ServiceBean:org.apache.dubbo.demo.DemoService&bind.ip=192.168.0.106&bind.port=20880&deprecated=false&dubbo=2.0.2&dynamic=true&generic=false&interface=org.apache.dubbo.demo.DemoService&methods=sayHello&pid=65623&register=true&release=&side=provider&timestamp=1608387742438
         URL providerUrl = getProviderUrl(originInvoker);
 
     // Subscribe the override data
@@ -220,10 +221,10 @@ public class RegistryProtocol implements Protocol {
         // 将提供者信息注册到服务者与消费者注册表中
         ProviderInvokerWrapper<T> providerInvokerWrapper = ProviderConsumerRegTable.registerProvider(originInvoker,
                 registryUrl, registeredProviderUrl);
-        //to judge if we need to delay publish  判断是否需要延迟发布
+        //to judge if we need to delay publish
         boolean register = registeredProviderUrl.getParameter("register", true);
         if (register) {
-            // 想注册中心注册服务，zookeeper
+            // 向注册中心注册服务，zookeeper
             register(registryUrl, registeredProviderUrl);
             providerInvokerWrapper.setReg(true);
         }
@@ -306,6 +307,11 @@ public class RegistryProtocol implements Protocol {
         return registryFactory.getRegistry(registryUrl);
     }
 
+    /**
+     * 将URL中registry参数替换URL真实的协议
+     * @param originInvoker
+     * @return
+     */
     private URL getRegistryUrl(Invoker<?> originInvoker) {
         URL registryUrl = originInvoker.getUrl();
         if (REGISTRY_PROTOCOL.equals(registryUrl.getProtocol())) {
@@ -345,7 +351,10 @@ public class RegistryProtocol implements Protocol {
         }
 
     }
-
+    /**
+     * 1 将协议改为provider；
+     * 2 添加参数：category=configurators和check=false；
+     */
     private URL getSubscribedOverrideUrl(URL registeredProviderUrl) {
         return registeredProviderUrl.setProtocol(PROVIDER_PROTOCOL)
                 .addParameters(CATEGORY_KEY, CONFIGURATORS_CATEGORY, CHECK_KEY, String.valueOf(false));
@@ -416,7 +425,7 @@ public class RegistryProtocol implements Protocol {
             // 注册
             registry.register(directory.getRegisteredConsumerUrl());
         }
-        directory.buildRouterChain(subscribeUrl);
+        directory.buildRouterChain(subscribeUrl);// 路由调用链
         // 订阅
         directory.subscribe(subscribeUrl.addParameter(CATEGORY_KEY,
                 PROVIDERS_CATEGORY + "," + CONFIGURATORS_CATEGORY + "," + ROUTERS_CATEGORY));

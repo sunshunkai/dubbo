@@ -49,9 +49,17 @@ public class ProtocolFilterWrapper implements Protocol {
     }
 
 
-
+    /**
+     *
+     * @param invoker
+     * @param key  service.filter、reference.filter
+     * @param group  provider、consumer
+     * @param <T>
+     * @return
+     */
     private static <T> Invoker<T> buildInvokerChain(final Invoker<T> invoker, String key, String group) {
         Invoker<T> last = invoker;
+        //得到所有的Filter
         List<Filter> filters = ExtensionLoader.getExtensionLoader(Filter.class).getActivateExtension(invoker.getUrl(), key, group);
 
         if (!filters.isEmpty()) {
@@ -79,6 +87,8 @@ public class ProtocolFilterWrapper implements Protocol {
                     public Result invoke(Invocation invocation) throws RpcException {
                         Result asyncResult;
                         try {
+                            //最后一个过滤器的invoke调用的是通过Protocol得到的Invoker
+                            //第一个过滤器的invoke调用的是第二个过滤器
                             asyncResult = filter.invoke(next, invocation);
                         } catch (Exception e) {
                             // onError callback

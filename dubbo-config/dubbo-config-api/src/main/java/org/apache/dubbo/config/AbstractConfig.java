@@ -374,7 +374,7 @@ public abstract class AbstractConfig implements Serializable {
         }
     }
 
-    protected static void checkProperty(String property, String value, int maxlength, Pattern pattern) {
+    protected static void checkProperty(String property, String value, int maxlength, Pattern /**/pattern) {
         if (StringUtils.isEmpty(value)) {
             return;
         }

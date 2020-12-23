@@ -142,6 +142,7 @@ public abstract class AbstractClusterInvoker<T> implements Invoker<T> {
         Invoker<T> invoker = doSelect(loadbalance, invocation, invokers, selected);
 
         if (sticky) {
+            // 设置粘滞连接,第一次选择一个Invoker之后后面的都选择这个
             stickyInvoker = invoker;
         }
         return invoker;

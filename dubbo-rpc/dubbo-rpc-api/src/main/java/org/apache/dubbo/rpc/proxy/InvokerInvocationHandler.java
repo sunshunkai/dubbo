@@ -26,6 +26,7 @@ import java.lang.reflect.Method;
 
 /**
  * InvokerHandler
+ * Invoker代理
  */
 public class InvokerInvocationHandler implements InvocationHandler {
     private static final Logger logger = LoggerFactory.getLogger(InvokerInvocationHandler.class);

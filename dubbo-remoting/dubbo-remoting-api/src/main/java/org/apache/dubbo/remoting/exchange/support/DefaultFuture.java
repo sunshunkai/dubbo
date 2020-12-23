@@ -47,7 +47,8 @@ public class DefaultFuture extends CompletableFuture<Object> {
     private static final Logger logger = LoggerFactory.getLogger(DefaultFuture.class);
 
     private static final Map<Long, Channel> CHANNELS = new ConcurrentHashMap<>();
-
+    // 每次请求都会生成一个DefaultFuture对象，然后保存到FUTURES中，
+    // 请求返回结果时，根据id从FUTURES中找到对应的DefaultFuture对象，并删除
     private static final Map<Long, DefaultFuture> FUTURES = new ConcurrentHashMap<>();
 
     public static final Timer TIME_OUT_TIMER = new HashedWheelTimer(
@@ -58,7 +59,9 @@ public class DefaultFuture extends CompletableFuture<Object> {
     // invoke id.
     private final Long id;
     private final Channel channel;
+    // 请求对象
     private final Request request;
+    // 超时时间
     private final int timeout;
     private final long start = System.currentTimeMillis();
     private volatile long sent;
@@ -186,8 +189,10 @@ public class DefaultFuture extends CompletableFuture<Object> {
         if (res.getStatus() == Response.OK) {
             this.complete(res.getResult());
         } else if (res.getStatus() == Response.CLIENT_TIMEOUT || res.getStatus() == Response.SERVER_TIMEOUT) {
+            // 客户端或服务端超时
             this.completeExceptionally(new TimeoutException(res.getStatus() == Response.SERVER_TIMEOUT, channel, res.getErrorMessage()));
         } else {
+            // 远程调用异常
             this.completeExceptionally(new RemotingException(channel, res.getErrorMessage()));
         }
     }
@@ -229,6 +234,9 @@ public class DefaultFuture extends CompletableFuture<Object> {
                 + " -> " + channel.getRemoteAddress();
     }
 
+    /**
+     * 定时任务超时检查
+     */
     private static class TimeoutCheckTask implements TimerTask {
 
         private final Long requestID;

@@ -43,6 +43,17 @@ import java.io.InputStream;
 
 /**
  * ExchangeCodec.
+ *
+ * Dubbo 协议帧由header【字节】和body组成
+ *
+ * header：
+ * 0-7：magic high    固定值 0xda
+ * 8-15:magic low   固定值  0xbb
+ * 16-23:request flag and serialization id  请求类型和序列化id
+ * 24-31:reqponse status   响应状态
+ * 32-95:request id    请求id
+ * 96-127:body length   body内容大小
+ *
  */
 public class ExchangeCodec extends TelnetCodec {
 
@@ -65,11 +76,14 @@ public class ExchangeCodec extends TelnetCodec {
 
     @Override
     public void encode(Channel channel, ChannelBuffer buffer, Object msg) throws IOException {
+        // 请求信息编码
         if (msg instanceof Request) {
             encodeRequest(channel, buffer, (Request) msg);
         } else if (msg instanceof Response) {
+            // 响应信息编码
             encodeResponse(channel, buffer, (Response) msg);
         } else {
+            // 其他信息编码
             super.encode(channel, buffer, msg);
         }
     }
