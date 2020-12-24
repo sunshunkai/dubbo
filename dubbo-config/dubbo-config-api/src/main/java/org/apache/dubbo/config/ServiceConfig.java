@@ -450,7 +450,9 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     private void doExportUrls() {
+        // 多注册中心，非集群。所以需要变量每个注册中心进行注册,每个URL可能是单注册节点,也可能是集群[backup]
         List<URL> registryURLs = loadRegistries(true);
+        // 每种协议都导出一次
         for (ProtocolConfig protocolConfig : protocols) {
             String pathKey = URL.buildKey(getContextPath(protocolConfig).map(p -> p + "/" + path).orElse(path), group, version);
             ProviderModel providerModel = new ProviderModel(pathKey, ref, interfaceClass);

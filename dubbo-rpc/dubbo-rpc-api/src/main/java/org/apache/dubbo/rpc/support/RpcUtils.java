@@ -191,11 +191,19 @@ public class RpcUtils {
         return $INVOKE_ASYNC.equals(inv.getMethodName());
     }
 
+    /**
+     *
+     * @param url
+     * @param inv
+     * @return true:异步调用
+     */
     public static boolean isOneway(URL url, Invocation inv) {
         boolean isOneway;
+        // 接口级别检查是否异步
         if (Boolean.FALSE.toString().equals(inv.getAttachment(RETURN_KEY))) {
             isOneway = true;
         } else {
+            // 方法上是否异步
             isOneway = !url.getMethodParameter(getMethodName(inv), RETURN_KEY, true);
         }
         return isOneway;
