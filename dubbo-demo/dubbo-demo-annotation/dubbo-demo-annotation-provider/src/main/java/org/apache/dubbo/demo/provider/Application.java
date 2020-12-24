@@ -18,18 +18,20 @@
  */
 package org.apache.dubbo.demo.provider;
 
+import org.apache.dubbo.common.extension.ExtensionLoader;
 import org.apache.dubbo.config.RegistryConfig;
 import org.apache.dubbo.config.spring.context.annotation.EnableDubbo;
 
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
+import org.apache.dubbo.demo.provider.spi.HelloSpi;
+import org.apache.dubbo.demo.provider.spi.impl.AHelloSpi;
+import org.apache.dubbo.rpc.Protocol;
+import org.springframework.context.annotation.*;
 
 public class Application {
     public static void main(String[] args) throws Exception {
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ProviderConfiguration.class);
         context.start();
+
         System.in.read();
     }
 
