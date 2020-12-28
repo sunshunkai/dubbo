@@ -63,6 +63,8 @@ import static org.apache.dubbo.common.constants.FilterConstants.CACHE_KEY;
  * @see org.apache.dubbo.cache.support.expiring.ExpiringCacheFactory
  * @see org.apache.dubbo.cache.support.expiring.ExpiringCache
  *
+ * 服务调用缓存
+ *
  */
 @Activate(group = {CONSUMER, PROVIDER}, value = CACHE_KEY)
 public class CacheFilter implements Filter {
@@ -98,11 +100,13 @@ public class CacheFilter implements Filter {
                 Object value = cache.get(key);
                 if (value != null) {
                     if (value instanceof ValueWrapper) {
+                        // 如果取出的缓存是包装过的，取出原生对象，设置response信息
                         return AsyncRpcResult.newDefaultAsyncResult(((ValueWrapper) value).get(), invocation);
                     } else {
                         return AsyncRpcResult.newDefaultAsyncResult(value, invocation);
                     }
                 }
+                // 缓存不存在
                 Result result = invoker.invoke(invocation);
                 if (!result.hasException()) {
                     cache.put(key, new ValueWrapper(result.getValue()));
@@ -110,11 +114,13 @@ public class CacheFilter implements Filter {
                 return result;
             }
         }
+        // 未配置缓存，直接调用服务
         return invoker.invoke(invocation);
     }
 
     /**
      * Cache value wrapper.
+     * 缓存包装
      */
     static class ValueWrapper implements Serializable {
 

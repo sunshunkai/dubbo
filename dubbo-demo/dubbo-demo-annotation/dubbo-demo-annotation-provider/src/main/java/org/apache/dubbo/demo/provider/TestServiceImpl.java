@@ -10,7 +10,7 @@ import org.apache.dubbo.demo.TestService;
 @Service
 public class TestServiceImpl implements TestService {
     @Override
-    public String hello() {
-        return "hello";
+    public String hello(String hello) {
+        return "I am :" + hello;
     }
 }

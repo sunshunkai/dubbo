@@ -44,7 +44,7 @@ import static org.apache.dubbo.remoting.Constants.SERIALIZATION_KEY;
  * </pre>
  *
  * @see Filter
- *
+ * 兼容适配器，能对结果返回值做一些类型转换，注入基本类型到装箱类型的互转，复合类型到序列化值的转换(依赖你配置的序列化类型)等
  */
 public class CompatibleFilter extends ListenableFilter {
 

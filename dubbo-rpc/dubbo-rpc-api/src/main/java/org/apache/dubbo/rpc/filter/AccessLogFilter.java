@@ -132,7 +132,7 @@ public class AccessLogFilter implements Filter {
                     String accessLog = entry.getKey();
                     Set<AccessLogData> logSet = entry.getValue();
                     if (ConfigUtils.isDefault(accessLog)) {
-                        // 默认日志
+                        // 默认日志[适配程序中的日志框架]
                         processWithServiceLogger(logSet);
                     } else {
                         // 日志写到文件中

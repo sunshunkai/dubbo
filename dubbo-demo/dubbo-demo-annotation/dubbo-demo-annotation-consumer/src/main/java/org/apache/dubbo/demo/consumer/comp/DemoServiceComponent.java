@@ -22,6 +22,8 @@ package org.apache.dubbo.demo.consumer.comp;
 import org.apache.dubbo.config.annotation.Reference;
 import org.apache.dubbo.demo.DemoService;
 
+import org.apache.dubbo.demo.TestService;
+import org.apache.dubbo.rpc.service.GenericService;
 import org.springframework.stereotype.Component;
 
 @Component("demoServiceComponent")
@@ -29,8 +31,12 @@ public class DemoServiceComponent implements DemoService {
     @Reference
     private DemoService demoService;
 
+//    @Reference(generic = true,interfaceName="org.apache.dubbo.demo.TestService")
+//    private GenericService genericService;
+
     @Override
     public String sayHello(String name) {
+//        Object gen = genericService.$invoke("hello", new String[]{"java.lang.String"}, new Object[]{"world"});
         return demoService.sayHello(name);
     }
 }

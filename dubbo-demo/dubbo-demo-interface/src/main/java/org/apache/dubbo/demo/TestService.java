@@ -5,5 +5,5 @@ package org.apache.dubbo.demo;
  * @date 2020/11/22
  */
 public interface TestService {
-    String hello();
+    String hello(String hello);
 }

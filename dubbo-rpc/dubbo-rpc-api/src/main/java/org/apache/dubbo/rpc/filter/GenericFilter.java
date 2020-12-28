@@ -51,6 +51,7 @@ import static org.apache.dubbo.rpc.Constants.GENERIC_SERIALIZATION_PROTOBUF;
 
 /**
  * GenericInvokerFilter.
+ * 泛化调用
  */
 @Activate(group = CommonConstants.PROVIDER, order = -20000)
 public class GenericFilter extends ListenableFilter {
@@ -138,6 +139,7 @@ public class GenericFilter extends ListenableFilter {
                                         args[0].getClass().getName());
                     }
                 }
+                // 泛化调用，将参数等信息封装成 RpcInvocation 再调用
                 return invoker.invoke(new RpcInvocation(method, args, inv.getAttachments()));
             } catch (NoSuchMethodException e) {
                 throw new RpcException(e.getMessage(), e);
