@@ -30,6 +30,7 @@ import java.util.List;
 
 /**
  * StaticDirectory
+ * 多注册中心，不会监听注册中心变化
  */
 public class StaticDirectory<T> extends AbstractDirectory<T> {
     private static final Logger logger = LoggerFactory.getLogger(StaticDirectory.class);

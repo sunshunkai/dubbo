@@ -31,7 +31,7 @@ public class Application {
     public static void main(String[] args) throws Exception {
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ProviderConfiguration.class);
         context.start();
-
+//        testSPI();
         System.in.read();
     }
 
@@ -45,5 +45,12 @@ public class Application {
             registryConfig.setAddress("zookeeper://127.0.0.1:2181");
             return registryConfig;
         }
+    }
+
+
+    public static void testSPI(){
+        ExtensionLoader<HelloSpi> extensionLoader = ExtensionLoader.getExtensionLoader(HelloSpi.class);
+        HelloSpi ahello = extensionLoader.getExtension("ahello");
+        ahello.hello();
     }
 }

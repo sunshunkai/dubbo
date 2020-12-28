@@ -85,6 +85,7 @@ import static org.apache.dubbo.rpc.cluster.Constants.ROUTER_KEY;
 
 /**
  * RegistryDirectory
+ * 单注册中心，会监听注册中心变化
  */
 public class RegistryDirectory<T> extends AbstractDirectory<T> implements NotifyListener {
 

@@ -1,6 +1,7 @@
 package org.apache.dubbo.demo.provider.spi.impl;
 
 
+import lombok.Setter;
 import org.apache.dubbo.demo.TestService;
 import org.apache.dubbo.demo.provider.spi.HelloSpi;
 
@@ -11,7 +12,7 @@ import org.apache.dubbo.demo.provider.spi.HelloSpi;
  */
 public class AHelloSpi implements HelloSpi {
 
-
+    @Setter
     private TestService testService;
 
 //    public void setTestService(TestService testService){

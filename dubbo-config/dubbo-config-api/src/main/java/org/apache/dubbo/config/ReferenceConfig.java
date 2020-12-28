@@ -280,7 +280,7 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
         map.put(SIDE_KEY, CONSUMER_SIDE);
 
         appendRuntimeParameters(map);
-        if (!isGeneric()) {
+        if (!isGeneric()) {// 非泛化调用
             String revision = Version.getVersion(interfaceClass, version);
             if (revision != null && revision.length() > 0) {
                 map.put(REVISION_KEY, revision);
@@ -396,9 +396,9 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
             }
 
             if (urls.size() == 1) {
-                // RegistryProtocol
+                // RegistryProtocol 单注册中心
                 invoker = REF_PROTOCOL.refer(interfaceClass, urls.get(0));
-            } else {
+            } else {// 多注册中心
                 List<Invoker<?>> invokers = new ArrayList<Invoker<?>>();
                 URL registryURL = null;
                 for (URL url : urls) {

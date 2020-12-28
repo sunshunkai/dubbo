@@ -211,14 +211,14 @@ public class RegistryProtocol implements Protocol {
         overrideListeners.put(overrideSubscribeUrl, overrideSubscribeListener);
 
         providerUrl = overrideUrlWithConfig(providerUrl, overrideSubscribeListener);
-        //export invoker 这里就是前面说的dubbo:// 的暴露，并且还会打开端口等操作  DubboProtocol
+        //export invoker 这里就是前面说的dubbo:// 的暴露，并且还会打开端口等操作  DubboProtocol, Netty
         final ExporterChangeableWrapper<T> exporter = doLocalExport(originInvoker, providerUrl);
 
         // url to registry 根据URL加载Registry的实现类，比如我们这里用的即使ZookeeperRegistry
         final Registry registry = getRegistry(originInvoker);
         // 获取注册的服务提供者的URL，这里就是刚才我们说的Dubbo://...
         final URL registeredProviderUrl = getRegisteredProviderUrl(providerUrl, registryUrl);
-        // 将提供者信息注册到服务者与消费者注册表中
+        // 将提供者信息注册到服务者与消费者注册表中[本地]
         ProviderInvokerWrapper<T> providerInvokerWrapper = ProviderConsumerRegTable.registerProvider(originInvoker,
                 registryUrl, registeredProviderUrl);
         //to judge if we need to delay publish
@@ -424,11 +424,11 @@ public class RegistryProtocol implements Protocol {
         URL subscribeUrl = new URL(CONSUMER_PROTOCOL, parameters.remove(REGISTER_IP_KEY), 0, type.getName(), parameters);
         if (!ANY_VALUE.equals(url.getServiceInterface()) && url.getParameter(REGISTER_KEY, true)) {
             directory.setRegisteredConsumerUrl(getRegisteredConsumerUrl(subscribeUrl, url));
-            // 注册
+            // 注册consumer信息
             registry.register(directory.getRegisteredConsumerUrl());
         }
         directory.buildRouterChain(subscribeUrl);// 路由调用链
-        // 订阅
+        // 订阅providers、configurators、routers
         directory.subscribe(subscribeUrl.addParameter(CATEGORY_KEY,
                 PROVIDERS_CATEGORY + "," + CONFIGURATORS_CATEGORY + "," + ROUTERS_CATEGORY));
 

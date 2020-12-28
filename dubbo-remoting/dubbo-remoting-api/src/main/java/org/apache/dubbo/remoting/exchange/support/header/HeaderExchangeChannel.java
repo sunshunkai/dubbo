@@ -114,7 +114,7 @@ final class HeaderExchangeChannel implements ExchangeChannel {
         req.setTwoWay(true);
         req.setData(request);
         DefaultFuture future = DefaultFuture.newFuture(channel, req, timeout);
-        try {
+        try {// HearderExchangeChannel->AbstractPeer->AbstractClient->NettyChannel
             channel.send(req);
         } catch (RemotingException e) {
             future.cancel();

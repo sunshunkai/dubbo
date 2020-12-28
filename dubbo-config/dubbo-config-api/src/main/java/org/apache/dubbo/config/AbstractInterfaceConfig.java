@@ -485,7 +485,9 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
         }
 
         String normalizedMock = MockInvoker.normalizeMock(mock);
+        // return
         if (normalizedMock.startsWith(RETURN_PREFIX)) {
+            // return 后面的值
             normalizedMock = normalizedMock.substring(RETURN_PREFIX.length()).trim();
             try {
                 //Check whether the mock value is legal, if it is illegal, throw exception
@@ -495,6 +497,7 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
                         "mock=\"" + mock + "\" />");
             }
         } else if (normalizedMock.startsWith(THROW_PREFIX)) {
+            // throw
             normalizedMock = normalizedMock.substring(THROW_PREFIX.length()).trim();
             if (ConfigUtils.isNotEmpty(normalizedMock)) {
                 try {

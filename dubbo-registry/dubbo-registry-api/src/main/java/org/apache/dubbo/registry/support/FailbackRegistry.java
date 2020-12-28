@@ -103,6 +103,7 @@ public abstract class FailbackRegistry extends AbstractRegistry {
     private void addFailedRegistered(URL url) {
         FailedRegisteredTask oldOne = failedRegistered.get(url);
         if (oldOne != null) {
+            // 不是第一次重试失败
             return;
         }
         FailedRegisteredTask newTask = new FailedRegisteredTask(url, this);
@@ -254,7 +255,7 @@ public abstract class FailbackRegistry extends AbstractRegistry {
                 logger.error("Failed to register " + url + ", waiting for retry, cause: " + t.getMessage(), t);
             }
 
-            // Record a failed registration request to a failed list, retry regularly
+            // 记录注册失败的服务，提供重试
             addFailedRegistered(url);
         }
     }

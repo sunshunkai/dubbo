@@ -53,6 +53,7 @@ public abstract class AbstractReferenceConfig extends AbstractInterfaceConfig {
 
     /**
      * Whether to use generic interface
+     * 泛化调用
      */
     protected String generic;
 

@@ -29,6 +29,7 @@ public class Transporters {
 
     static {
         // check duplicate jar package
+        // 检查重复的jar包
         Version.checkDuplicate(Transporters.class);
         Version.checkDuplicate(RemotingException.class);
     }
@@ -53,6 +54,8 @@ public class Transporters {
         } else {
             handler = new ChannelHandlerDispatcher(handlers);
         }
+        // 调用Transporter的实现类对象的bind方法的connect，并返回
+        // 例如实现NettyTransporter，则调用NettyTransporter相应Server
         return getTransporter().bind(url, handler);
     }
 

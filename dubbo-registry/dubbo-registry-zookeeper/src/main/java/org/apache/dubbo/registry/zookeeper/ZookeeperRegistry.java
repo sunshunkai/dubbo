@@ -178,7 +178,7 @@ public class ZookeeperRegistry extends FailbackRegistry {
                         urls.addAll(toUrlsWithEmpty(url, path, children));
                     }
                 }
-                // 订阅configuration之后先去读取一下配置信息
+                // 回调，配置持久化在本地文件中
                 notify(url, listener, urls);
             }
         } catch (Throwable e) {
@@ -242,6 +242,11 @@ public class ZookeeperRegistry extends FailbackRegistry {
         return toRootDir() + URL.encode(name);
     }
 
+    /**
+     * 从URL中提取需要订阅的信息
+     * @param url
+     * @return
+     */
     private String[] toCategoriesPath(URL url) {
         String[] categories;
         if (ANY_VALUE.equals(url.getParameter(CATEGORY_KEY))) {
