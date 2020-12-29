@@ -24,6 +24,7 @@ import org.apache.dubbo.demo.DemoService;
 import org.apache.dubbo.demo.TestService;
 import org.apache.dubbo.demo.consumer.comp.DemoServiceComponent;
 
+import org.apache.dubbo.rpc.service.EchoService;
 import org.apache.dubbo.rpc.service.GenericService;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
@@ -48,6 +49,9 @@ public class Application {
         // 泛化调用
 //        testGenericService();
 
+        // 回声测试
+//        testEcho();
+
     }
 
     @Configuration
@@ -68,6 +72,17 @@ public class Application {
         GenericService genericService = referenceConfig.get();
         Object hello = genericService.$invoke("hello", new String[]{"java.lang.String"}, new Object[]{"world"});
         System.out.println("返回调用测试结果:" + hello);
+    }
+
+    /**
+     * 回声测试
+     */
+    private static void testEcho(){
+        ReferenceConfig<EchoService> referenceConfig = new ReferenceConfig<EchoService>();
+        referenceConfig.setInterface("org.apache.dubbo.demo.TestService");
+        EchoService genericService = referenceConfig.get();
+        Object hello = genericService.$echo("你好");
+        System.out.println("回声测试:" + hello);
     }
 
 }
