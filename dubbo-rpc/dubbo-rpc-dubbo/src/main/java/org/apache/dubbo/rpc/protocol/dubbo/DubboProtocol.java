@@ -433,9 +433,10 @@ public class DubboProtocol extends AbstractProtocol {
         ExchangeClient[] clients = new ExchangeClient[connections];
         for (int i = 0; i < clients.length; i++) {
             if (useShareConnect) {
+                // 获取共享客户端
                 clients[i] = shareClients.get(i);
-
             } else {
+                // 初始化新的客户端
                 clients[i] = initClient(url);
             }
         }
@@ -451,9 +452,11 @@ public class DubboProtocol extends AbstractProtocol {
      */
     private List<ReferenceCountExchangeClient> getSharedClient(URL url, int connectNum) {
         String key = url.getAddress();
+        // 获取带有“引用计数”功能的 ExchangeClient
         List<ReferenceCountExchangeClient> clients = referenceClientMap.get(key);
 
         if (checkClientCanUse(clients)) {
+            // 引用数加1
             batchClientRefIncr(clients);
             return clients;
         }
@@ -592,6 +595,7 @@ public class DubboProtocol extends AbstractProtocol {
                 client = new LazyConnectExchangeClient(url, requestHandler);
 
             } else {
+                // 获取 Exchanger 实例，默认为 HeaderExchangeClient
                 client = Exchangers.connect(url, requestHandler);
             }
 

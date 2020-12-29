@@ -50,8 +50,9 @@ import static org.apache.dubbo.common.constants.CommonConstants.METHOD_KEY;
 import static org.apache.dubbo.common.constants.CommonConstants.HOST_KEY;
 
 /**
- * ConditionRouter
- *
+ * ConditionRouter  条件路由
+ * 格式：[服务消费者匹配条件] => [服务提供者匹配条件]
+ * 例如：host = 10.20.153.10 => host = 10.20.153.11表示10.20.153.10只可消费10.20.153.11服务
  */
 public class ConditionRouter extends AbstractRouter {
     public static final String NAME = "condition";
@@ -71,20 +72,28 @@ public class ConditionRouter extends AbstractRouter {
 
     public ConditionRouter(URL url) {
         this.url = url;
+        // 获取 priority 和 force 配置
         this.priority = url.getParameter(PRIORITY_KEY, 0);
         this.force = url.getParameter(FORCE_KEY, false);
         this.enabled = url.getParameter(ENABLED_KEY, true);
+        // 路由规则
         init(url.getParameterAndDecoded(RULE_KEY));
     }
 
+    /**
+     * 初始化路由规则
+     */
     public void init(String rule) {
         try {
             if (rule == null || rule.trim().length() == 0) {
                 throw new IllegalArgumentException("Illegal route rule!");
             }
             rule = rule.replace("consumer.", "").replace("provider.", "");
+            // 分隔符
             int i = rule.indexOf("=>");
+            // 消费者匹配规则
             String whenRule = i < 0 ? null : rule.substring(0, i).trim();
+            // 提供者匹配规则
             String thenRule = i < 0 ? rule.trim() : rule.substring(i + 2).trim();
             Map<String, MatchPair> when = StringUtils.isBlank(whenRule) || "true".equals(whenRule) ? new HashMap<String, MatchPair>() : parseRule(whenRule);
             Map<String, MatchPair> then = StringUtils.isBlank(thenRule) || "false".equals(thenRule) ? null : parseRule(thenRule);
@@ -96,8 +105,15 @@ public class ConditionRouter extends AbstractRouter {
         }
     }
 
+    /**
+     * 解析路由规则
+     * @param rule
+     * @return
+     * @throws ParseException
+     */
     private static Map<String, MatchPair> parseRule(String rule)
             throws ParseException {
+        // 定义条件映射集合
         Map<String, MatchPair> condition = new HashMap<String, MatchPair>();
         if (StringUtils.isBlank(rule)) {
             return condition;
@@ -106,11 +122,27 @@ public class ConditionRouter extends AbstractRouter {
         MatchPair pair = null;
         // Multiple values
         Set<String> values = null;
+
+        // 通过正则表达式匹配路由规则，ROUTE_PATTERN = ([&!=,]*)\s*([^&!=,\s]+)
+        // 第一个括号内的表达式用于匹配"&", "!", "=" 和 "," 等符号。
+        // 第二括号内的用于匹配英文字母，数字等字符。举个例子说明一下：
+        //    host = 2.2.2.2 & host != 1.1.1.1 & method = hello
+        // 匹配结果如下：
+        //     括号一      括号二
+        // 1.  null       host
+        // 2.   =         2.2.2.2
+        // 3.   &         host
+        // 4.   !=        1.1.1.1
+        // 5.   &         method
+        // 6.   =         hello
         final Matcher matcher = ROUTE_PATTERN.matcher(rule);
         while (matcher.find()) { // Try to match one by one
+            // 获取括号一内的匹配结果
             String separator = matcher.group(1);
+            // 获取括号二内的匹配结果
             String content = matcher.group(2);
             // Start part of the condition expression.
+            // 分隔符为空，表示匹配的是表达式的开始部分
             if (StringUtils.isEmpty(separator)) {
                 pair = new MatchPair();
                 condition.put(content, pair);

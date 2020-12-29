@@ -50,6 +50,7 @@ import static org.apache.dubbo.rpc.Constants.INPUT_KEY;
 import static org.apache.dubbo.rpc.Constants.OUTPUT_KEY;
 /**
  * MonitorFilter. (SPI, Singleton, ThreadSafe)
+ * 统计服务调用时间、正在调用次数
  */
 @Activate(group = {PROVIDER, CONSUMER})
 public class MonitorFilter extends ListenableFilter {
@@ -86,7 +87,11 @@ public class MonitorFilter extends ListenableFilter {
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
         if (invoker.getUrl().hasParameter(MONITOR_KEY)) {
+            //将开始时间插入到invocation中，为后面统计服务耗时使用
+            //客户端和服务端对服务耗时的统计有区别：客户端统计包括了网络通讯时间，
+            //服务端统计时间仅仅是服务的运行时间，两者相减就是网络通讯时间
             invocation.setAttachment(MONITOR_FILTER_START_TIME, String.valueOf(System.currentTimeMillis()));
+            //以接口+方法名为key，访问服务时计数器加一，服务返回后减一，用于统计当前有多少个客户端在访问同一个服务方法
             getConcurrent(invoker, invocation).incrementAndGet(); // count up
         }
         return invoker.invoke(invocation); // proceed invocation chain

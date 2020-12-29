@@ -60,6 +60,9 @@ public class ScriptRouterTest {
         Assertions.assertEquals(invokers, filteredInvokers);
     }
 
+    /**
+     * Invoker 的 available属性决定是否可用
+     */
     @Test
     public void testRoutePickInvokers() {
         String rule = "var result = new java.util.ArrayList(invokers.size());" +

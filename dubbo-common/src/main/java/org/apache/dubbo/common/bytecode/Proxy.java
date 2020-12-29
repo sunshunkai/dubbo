@@ -79,8 +79,10 @@ public abstract class Proxy {
         }
 
         StringBuilder sb = new StringBuilder();
+        // 遍历接口列表
         for (int i = 0; i < ics.length; i++) {
             String itf = ics[i].getName();
+            // 检测类型是否为接口
             if (!ics[i].isInterface()) {
                 throw new RuntimeException(itf + " is not a interface.");
             }
